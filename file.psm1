@@ -27,6 +27,7 @@ function Get-LinesFromFile {
   }
   else {
     return $(Get-Content -Path $PropertiesPath | Where-Object { $_.Trim() -ne '' }
+    }
   }
 }
 
@@ -52,4 +53,16 @@ function Stop-Logging {
   }
 }
 
-Export-ModuleMember -Function Backup-File, Update-Content, Get-LinesFromFile, 
+function Set-FullControl {
+  Param(
+    [parameter(Mandatory = $true)][String]$Dir,
+    [parameter(Mandatory = $true)][String]$User
+  )
+  $acl = Get-Acl "$Dir"
+  $permission = ("$User", "FullControl", "ContainerInherit, ObjectInherit", "None", "Allow")
+  $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
+  $acl.SetAccessRule($accessRule)
+  $acl | Set-Acl "$Dir"
+}
+
+Export-ModuleMember -Function Backup-File, Update-Content, Get-LinesFromFile, Start-Logging, Stop-Logging, Set-FullControl

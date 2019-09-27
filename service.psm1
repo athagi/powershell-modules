@@ -25,9 +25,10 @@ function Test-Service {
   }
 }
 
-function Disable-Service {
+function Set-ServiceStartUp {
   param(
-    [parameter(Mandatory)][string]$ServiceName
+    [parameter(Mandatory)][string]$ServiceName,
+    [Validateset("Disabled", "Auto", "Manual")]$State
   )
   $Service = Get-Service $ServiceName
   if (!($Service)) {
@@ -35,7 +36,7 @@ function Disable-Service {
   }
 
   Stop-Service -Name $ServiceName
-  Set-Service $ServiceName -StartupType Disabled
+  Set-Service $ServiceName -StartupType $State
 }
 
-Export-ModuleMember -Function Test-Service, Test-Installed, Disable-Service
+Export-ModuleMember -Function Test-Service, Test-Installed, Set-ServiceStartUp
